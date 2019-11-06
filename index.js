@@ -17,20 +17,25 @@ router.use((req, res, next) => { // for all routes
 router.use(express.json());
 
 router.get('/:id', function(req, res) {
-	let data = JSON.stringify(db.get(req.params.id));
+	let data = JSON.stringify(db.get(req.params.id)); // query db
 	console.log('ID: ' + req.params.id + ' Data: ' + data);
-  res.send(data);
+  res.send(data); // return data
 });
 
+// POST requires a parameter for now
 router.post('/:id', function(req, res) {
 	console.log('Data: ' + JSON.stringify(req.body));
-  res.send('Got a POST request for /api with' + req.params.id);
+	
+	// merge existing object with given object using Object.assign()
+	let data = Object.assign(db.get(req.params.id), req.body);
+	db.set(req.params.id, data); // save the merged object
+  res.send(JSON.stringify(data)); // return merged object
 });
 
 router.put('/:id', function(req, res) {
 	console.log('Data: ' + JSON.stringify(req.body));
 	db.set(req.params.id, req.body); // save data with :id as the key
-  res.send('Got a POST request for /api with ' + req.params.id);
+  res.send(JSON.stringify(req.body));
 });
 
 app.use('/api', router); // Set the routes at '/api'
