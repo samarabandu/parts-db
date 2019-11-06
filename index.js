@@ -2,6 +2,10 @@ var express = require('express');
 var app = express(); 
 var router = express.Router();
 
+// Setup the database
+const JSONdb = require('simple-json-db');
+const db = new JSONdb('data/mydb.json');
+
 // serve files in static' folder at root URL '/'
 app.use('/', express.static('static'));
 
@@ -12,8 +16,10 @@ router.use((req, res, next) => { // for all routes
 
 router.use(express.json());
 
-router.get('/:id', function(req, res) { // 
-  res.send('Got a GET request for /api with ' + req.params.id);
+router.get('/:id', function(req, res) {
+	let data = JSON.stringify(db.get(req.params.id));
+	console.log('ID: ' + req.params.id + ' Data: ' + data);
+  res.send(data);
 });
 
 router.post('/:id', function(req, res) {
@@ -22,6 +28,8 @@ router.post('/:id', function(req, res) {
 });
 
 router.put('/:id', function(req, res) {
+	console.log('Data: ' + JSON.stringify(req.body));
+	db.set(req.params.id, req.body); // save data with :id as the key
   res.send('Got a POST request for /api with ' + req.params.id);
 });
 
