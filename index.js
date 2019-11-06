@@ -10,12 +10,15 @@ router.use((req, res, next) => { // for all routes
   next(); // keep going
 });
 
+router.use(express.json());
+
 router.get('/:id', function(req, res) { // 
   res.send('Got a GET request for /api with ' + req.params.id);
 });
 
-router.post('/', function(req, res) {
-  res.send('Got a POST request for /api');
+router.post('/:id', function(req, res) {
+	console.log('Data: ' + JSON.stringify(req.body));
+  res.send('Got a POST request for /api with' + req.params.id);
 });
 
 router.put('/:id', function(req, res) {
