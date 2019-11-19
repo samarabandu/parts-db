@@ -18,6 +18,9 @@ npm install
 
 ## Usage
 
+### Master branch
+
+Contains basic ReST API
 Start the server
 ```bash
 node index
@@ -25,6 +28,29 @@ node index
 
 Send requests to `localhost:8080/api`
 
+### Branch: prot-easy
+
+Includes simple authorization uwing JWT for the PUT route on /api/:id. To test, start the server with password set in the env. variable JWT_KEY.
+```bash
+JWT_KEY="se3316" node index
+```
+
+JWT token has following header and payload and signed with secret "se3316".
+```javascript
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+{
+  "sub": "jagath",
+  "admin": "0"
+}
+```
+Add the following header to the requests in the ReST client.
+```
+Authoriation: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYWdhdGgiLCJhZG1pbiI6IjAifQ._dtK-a4uWc9_dqkHM5yUxUzpnwIMLpNVfQSGynOvIxI
+```
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
