@@ -1,6 +1,6 @@
 # Parts DB
 
-Node.js script for a simple ReST API that provides following verb+noun combinations. Uses a simple 
+Node.js script for a simple ReST API that provides following verb+noun combinations.
 
 1. GET /api/id - Return stored data with matching 'id'.
 2. PUT /api/id - Create a new record (replaces any existing record).
