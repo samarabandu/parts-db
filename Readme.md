@@ -18,7 +18,7 @@ ReST API using `simple-json-db` as the database (save JSON objects in a file).
 
 ## Branch `prot-easy`
 
-Addes a authorization using JWT to the PUT route
+Addes a authorization using JWT to the PUT route. Use jwt.io website to generate a token and add this as a bearer token with the PUT request. E.g. Add the header "Authorization: Bearer xxx.yyy.zzz" where `xxx.yyy.zzz` is the token generated on jwt.io.
 
 # Branch `mongo`
 
