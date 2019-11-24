@@ -64,11 +64,67 @@ router.put('/:id', function(req, res) {
 		res.send(JSON.stringify(req.body));	  
 	  } catch (ex) {
 		//if invalid token
-		return res.status(400).send("Access denied. Invalid token.");
+		return res.status(401).send("Access denied. Invalid token.");
 	  }
 });
 
 app.use('/api', router); // Set the routes at '/api'
+
+// Authentication database - make a separate database
+const authdb = new JSONdb('data/authdb.json');
+
+// Authentication routes
+var rtauth = express.Router(); // Use a separate prefix to avoid routing conflicts
+rtauth.use(express.json());
+//const bcrypt = require('bcrypt');
+const crypto = require('crypto'); // Stopgap until bcrypt can be installed
+const saltRounds = 10000;
+const keylength = 512;
+const alg = 'sha512';
+
+// Create a new user
+rtauth.put('/new', function (req, res) {
+	let user = req.body.user;
+	console.log(`Creating user ${user}`);
+	if (typeof authdb.get(user) === 'undefined') { // user doesn't exist
+		let salt = crypto.randomBytes(16).toString('hex'); // generate a random salt
+		let hash = crypto.pbkdf2Sync(req.body.pwd, salt, saltRounds, keylength, alg).toString('hex');
+		authdb.set(user, {"salt": salt, "hash": hash}); // save salt and password hash with user as the key
+		res.send("{message: Success}");
+	}
+	else { // user already exists
+		res.status(400).send(`Username ${req.body.user} not available`);
+	}
+});
+
+// Validate a user and issue a token
+// use POST method to validate as it avoids sending credentials in URL
+rtauth.post('/validate', function (req, res) {
+	let user = req.body.user;
+	console.log(`Validating user ${user}`);
+	let cred = authdb.get(user); // get the salt and hash
+	if (typeof cred === 'undefined') { // user doesn't exist
+		res.status(401).send(`Access denied for ${user}`);
+		console.log('User doesn\'t exist');
+	}
+
+	// calculate the hash from password that is given and check against stored value
+	const hash = crypto.pbkdf2Sync(req.body.pwd, cred.salt, saltRounds, keylength, alg).toString('hex');
+	if (hash === cred.hash) { // Auth ok
+		let payload = {username: user, admin: 0}; 	// make up a payload for JWT
+		let token = jwt.sign(payload, secret);		// make a token
+		res.json(token);							// send it
+		console.log('token: ' + token);
+	}
+	else {
+		res.status(401).send(`Access denied for ${user}`);
+		console.log('Hashes don\'t match');
+	}
+
+
+});
+
+app.use('/auth', rtauth); // Set the routes at '/auth'
 
 app.listen(8080); // start server
 console.log('Listening on port 8080');
