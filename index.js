@@ -1,6 +1,7 @@
-var express = require('express');
-var app = express(); 
-var router = express.Router();
+const express = require('express');
+const app = express(); 
+const router = express.Router();
+const port = 8080;
 
 // Setup the database
 const JSONdb = require('simple-json-db');
@@ -40,5 +41,5 @@ router.put('/:id', function(req, res) {
 
 app.use('/api', router); // Set the routes at '/api'
 
-app.listen(8080); // start server
+app.listen(port); // start server
 console.log('Listening on port 8080');
